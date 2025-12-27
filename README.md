@@ -15,7 +15,7 @@ The aim is to explore whether color-emotion associations are universal or cultur
 
 ## 📢 Poster Presentation
 Click the link below to view or download the high-resolution academic poster:
-### 📄 [Download Final Poster (PDF)](Poster.pdf)
+### 📄 [Download Poster (PDF)](Poster.pdf)
 
 ---
 
