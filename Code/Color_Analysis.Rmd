@@ -1,0 +1,232 @@
+---
+title: "The Universal Language of Colors"
+author: "Hilal Selen Bütün"
+date: "2025-11-26"
+output: pdf_document
+---
+
+
+```{r setup, include=TRUE, message=FALSE, warning=FALSE}
+
+
+install.packages("tidyverse")
+install.packages("readr")
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("tidyr")
+
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+```{r message=FALSE, warning=FALSE}
+raw_data <- read_csv("color.csv")
+
+```
+```{r message=FALSE, warning=FALSE}
+heatmap_data <- plot_data %>%
+  group_by(color, Emotion) %>%
+  summarise(Mean_Score = mean(Score, na.rm = TRUE), .groups = 'drop') %>%
+  mutate(
+    color = reorder(color, Mean_Score, FUN = mean),
+    Emotion = reorder(Emotion, Mean_Score, FUN = mean)
+  )
+
+ggplot(heatmap_data, aes(x = color, y = Emotion, fill = Mean_Score)) +
+  geom_tile(color = "white", linewidth = 0.3) +
+  scale_fill_gradient(low = "#ebf3fb", high = "#004085") + 
+  labs(
+    title = "Heatmap of Color-Emotion Associations",
+    x = NULL,
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 15, face = "bold", color = "black"),
+    axis.text.y = element_text(size = 15, face = "bold", color = "black"),
+    
+    plot.title = element_text(size = 22, face = "bold", color = "black"),
+    
+    panel.grid = element_blank(),
+    legend.position = "none",
+    plot.margin = margin(20, 20, 20, 20) 
+  )
+
+ggsave("heatmap_final_corrected.png", width = 15, height = 8, dpi = 300)
+```
+
+```{r message=FALSE, warning=FALSE}
+
+error_data <- plot_data %>%
+  filter(color == "white", Emotion == "sadness") %>%
+  group_by(Country) %>%
+  summarise(
+    Mean_Score = mean(Score, na.rm = TRUE),
+    sd_score = sd(Score, na.rm = TRUE),
+    n = n(),
+    .groups = 'drop'
+  ) %>%
+  mutate(
+    se_score = sd_score / sqrt(n),    Country = reorder(Country, -Mean_Score)
+  )
+
+ggplot(error_data, aes(x = Country, y = Mean_Score)) +
+  geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8, width = 0.6) +
+  geom_errorbar(aes(ymin = Mean_Score - se_score, ymax = Mean_Score + se_score), 
+                width = 0.2, color = "black", linewidth = 0.8) +
+  scale_y_continuous(limits = c(0, 5), expand = c(0,0)) +
+  labs(
+    title = "Sadness Intensity for White: Cultural Comparison",
+    subtitle = "Error bars represent the Standard Error (SE)",
+    x = NULL, 
+    y = NULL
+  ) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(size = 15, face = "bold", color = "black"),
+    axis.text.y = element_text(size = 15, color = "black"),
+    plot.title = element_text(size = 22, face = "bold", margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 15, color = "grey30", face = "plain"),
+    axis.line = element_line(linewidth = 0.8)
+  )
+
+ggsave("white_sadness_descending.png", width = 11, height = 7, dpi = 300)
+```
+
+
+
+```{r stackedbar, fig.height=5, fig.width=9, message=FALSE, warning=FALSE}
+
+barplot_data <- plot_data %>%
+  filter(color == "red", Emotion %in% c("love", "anger")) %>%
+  group_by(Country, Emotion) %>%
+  summarise(Total_Score = sum(Score, na.rm = TRUE), .groups = 'drop_last') %>%
+  mutate(Proportion = Total_Score / sum(Total_Score)) %>%
+  ungroup()
+
+love_ranks <- barplot_data %>%
+  filter(Emotion == "love") %>%
+  arrange(desc(Proportion)) %>%
+  pull(Country)
+
+barplot_data <- barplot_data %>%
+  mutate(
+    Country = factor(Country, levels = love_ranks),
+    Emotion = factor(Emotion, levels = c("love", "anger"))
+  )
+
+ggplot(barplot_data, aes(x = Country, y = Proportion, fill = Emotion)) +
+  geom_bar(stat = "identity", position = position_stack(reverse = TRUE), width = 0.4) +
+  scale_fill_manual(values = c("love" = "firebrick", "anger" = "black")) +
+  labs(
+    title = "The Dual Nature of Red: Love and Anger",
+    subtitle = NULL, 
+    x = NULL, y = NULL, fill = NULL 
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 22, face = "bold", color = "black"),
+    axis.text.x = element_text(size = 15, face = "bold", color = "black"),
+    axis.text.y = element_text(size = 15, face = "bold", color = "black"),
+    legend.text = element_text(size = 15, face = "bold"),
+    
+    legend.position = "right", 
+    
+    panel.grid = element_blank()
+  ) +
+  geom_text(aes(label = scales::percent(Proportion, accuracy = 1)), 
+            position = position_stack(vjust = 0.5, reverse = TRUE), 
+            color = "white", fontface = "bold", size = 5)
+
+ggsave("red_love_anger_final_right_legend.png", width = 12, height = 8, dpi = 300)
+```
+
+
+
+```{r}
+global_intensity <- plot_data %>%
+  group_by(color) %>%
+  summarise(Overall_Mean = mean(Score, na.rm = TRUE), .groups = 'drop') %>%
+  mutate(color = reorder(color, Overall_Mean))
+
+ggplot(global_intensity, aes(x = color, y = Overall_Mean, fill = Overall_Mean)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  coord_flip() + 
+  scale_fill_gradient(low = "#d1e5f0", high = "#053061") + 
+  labs(
+    title = "Global Emotional Intensity of Colors",
+    subtitle = NULL, # Alt başlık kaldırıldı
+    x = NULL,        # "Color Name" kaldırıldı
+    y = NULL         # "Average Intensity Score" kaldırıldı
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 15, face = "bold", color = "black"),
+    axis.text.x = element_text(size = 12, color = "black"),
+    
+    axis.title = element_text(size = 15, face = "bold"),
+    
+    plot.title = element_text(size = 22, face = "bold"),
+    
+    legend.position = "none",
+    panel.grid.minor = element_blank()
+  )
+
+ggsave("global_color_intensity_large_clean.png", width = 10, height = 8, dpi = 300)
+```
+
+
+```{r}
+radar_data_black <- plot_data %>%
+  filter(color == "black") %>%
+  group_by(Emotion) %>%
+  summarise(Mean_Score = mean(Score, na.rm = TRUE))
+
+sorted_levels <- radar_data_black %>%
+  arrange(desc(Mean_Score)) %>%
+  pull(Emotion) %>%
+  as.character()
+
+idx_love <- which(sorted_levels == "love")
+idx_joy  <- which(sorted_levels == "joy")
+if(length(idx_love) > 0 && length(idx_joy) > 0) {
+  sorted_levels[c(idx_love, idx_joy)] <- sorted_levels[c(idx_joy, idx_love)]
+}
+
+radar_data_black$Emotion <- factor(radar_data_black$Emotion, levels = sorted_levels)
+
+ggplot(radar_data_black, aes(x = Emotion, y = Mean_Score, fill = Mean_Score)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  
+  coord_polar(clip = "off") + 
+  
+  scale_fill_gradient(low = "#cccccc", high = "#000000") +
+  
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) + 
+
+  scale_x_discrete(expand = expansion(add = 0.7)) +
+
+  theme_minimal() +
+  labs(
+    title = "The Emotional Depth of Black",
+    subtitle = NULL, 
+    x = NULL, y = NULL
+  ) +
+  theme(
+    axis.text.x = element_text(size = 15, face = "bold", color = "black"), 
+    axis.text.y = element_blank(), 
+    panel.grid.major = element_line(color = "grey85"),
+    
+    plot.title = element_text(size = 22, face = "bold", color = "black", margin = margin(b = 10), hjust = 0.5),
+    
+    plot.margin = margin(30, 30, 30, 30), 
+    legend.position = "none" 
+  )
+
+ggsave("black_radar_final_centered.png", width = 10, height = 10, dpi = 300)
+```
+
+
