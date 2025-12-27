@@ -2,7 +2,6 @@
 
 **Author:** Hilal Selen Bütün  
 **Course:** Data Visualization  
-**Data Source:** Jonauskaite et al. (2019)  
 **Methodology:** Data visualization and analysis using R (ggplot2).
 
 ---
@@ -16,9 +15,7 @@ The aim is to explore whether color-emotion associations are universal or cultur
 
 ## 📢 Poster Presentation
 Click the link below to view or download the high-resolution academic poster:
-### 📄 [Download Final Poster (PDF)](Final_Poster.pdf)
-
-*(Note: Please ensure the poster file name matches the link above)*
+### 📄 [Download Final Poster (PDF)](poster.pdf)
 
 ---
 
