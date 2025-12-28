@@ -6,20 +6,20 @@
 
 ---
 
-## 📖 Project Description
+## Project Description
 This project is a **reproducible analysis and visualization** based on the open dataset provided by the scientific study: *"A machine learning approach to quantify the specificity of colour–emotion associations"* (Jonauskaite et al., 2019). 
 
 The aim is to explore whether color-emotion associations are universal or cultural by visualizing the original dataset using R.
 
 ---
 
-## 📢 Poster Presentation
+## Poster Presentation
 Click the link below to view or download the high-resolution academic poster:
-### 📄 [Download Poster (PDF)](Poster.pdf)
+### [Download Poster (PDF)](Poster.pdf)
 
 ---
 
-### 📂 Repository Contents
+### Repository Contents
 
 This repository is organized to provide both the visual outputs and the reproducibility of the analysis.
 
@@ -39,7 +39,7 @@ High-resolution visual outputs generated from the analysis:
 
 ---
 
-### 📊 Key Visualizations
+### Key Visualizations
 
 Here is a preview of the main charts generated in this project:
 
