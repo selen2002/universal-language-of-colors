@@ -1,4 +1,4 @@
-# The Universal Language of Colors 🌍🎨
+# The Universal Language of Colors 
 
 **Author:** Hilal Selen Bütün  
 **Course:** Data Visualization  
